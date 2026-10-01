@@ -15,6 +15,25 @@ function tekst(v: unknown): string {
   return typeof v === "string" ? v.trim() : v == null ? "" : String(v).trim();
 }
 
+/**
+ * Zoekt een waarde op in de losse variabelen die Instantly meestuurt.
+ * De namen daarvan liggen niet vast, dus we kijken naar alles wat erop lijkt.
+ */
+function uitVariabelen(
+  variabelen: Record<string, unknown> | null,
+  woorden: string[]
+): string {
+  if (!variabelen) return "";
+  for (const [sleutel, waarde] of Object.entries(variabelen)) {
+    const schoon = sleutel.toLowerCase().replace(/[^a-z]/g, "");
+    if (woorden.some((w) => schoon.includes(w))) {
+      const v = tekst(waarde);
+      if (v) return v;
+    }
+  }
+  return "";
+}
+
 /** "schilder Hoogezand" -> { niche: "schilder", plaats: "Hoogezand" } */
 function splitsZoekterm(zoekterm: string): { niche: string; plaats: string } {
   const delen = zoekterm.trim().split(/\s+/);
@@ -54,10 +73,45 @@ export async function POST(req: Request) {
       throw new ApiFout("Vul minstens een bedrijfsnaam of een e-mailadres in");
     }
 
-    const zoekterm = tekst(body.zoekterm);
+    const variabelen =
+      body.variabelen && typeof body.variabelen === "object"
+        ? (body.variabelen as Record<string, unknown>)
+        : null;
+
+    const zoekterm =
+      tekst(body.zoekterm) ||
+      uitVariabelen(variabelen, ["zoekterm", "zoekwoord", "keyword", "searchterm", "query"]);
+    const positie =
+      tekst(body.positie) ||
+      uitVariabelen(variabelen, ["positie", "plek", "rank", "position"]);
+    const volume =
+      tekst(body.volume) ||
+      uitVariabelen(variabelen, ["volume", "zoekvolume", "searches", "searchvolume"]);
     const afgeleid = splitsZoekterm(zoekterm);
-    const plaats = tekst(body.plaats) || afgeleid.plaats;
-    const niche = tekst(body.niche) || afgeleid.niche;
+    const plaats =
+      tekst(body.plaats) ||
+      uitVariabelen(variabelen, ["plaats", "stad", "city", "locatie"]) ||
+      afgeleid.plaats;
+    const niche =
+      tekst(body.niche) ||
+      uitVariabelen(variabelen, ["niche", "branche", "sector"]) ||
+      afgeleid.niche;
+
+    /* alles wat we niet herkend hebben bewaren we in de notitie, zodat we
+       kunnen zien hoe de velden in Instantly heten */
+    const gebruikt = ["zoekterm","zoekwoord","keyword","searchterm","query","positie","plek","rank","position","volume","zoekvolume","searches","searchvolume","plaats","stad","city","locatie","niche","branche","sector"];
+    const rest = variabelen
+      ? Object.entries(variabelen)
+          .filter(([k, v]) => {
+            const schoon = k.toLowerCase().replace(/[^a-z]/g, "");
+            return tekst(v) && !gebruikt.some((w) => schoon.includes(w));
+          })
+          .map(([k, v]) => `${k}: ${tekst(v)}`)
+      : [];
+
+    const notitie = [tekst(body.notitie), rest.length ? "Overige gegevens uit Instantly:\n" + rest.join("\n") : ""]
+      .filter(Boolean)
+      .join("\n\n");
 
     /* bestaat deze lead al? dan bijwerken in plaats van dubbel aanmaken */
     const bestaand = email
@@ -91,7 +145,7 @@ export async function POST(req: Request) {
           tekst(body.website),
           zoekterm,
           tekst(body.bron),
-          tekst(body.notitie),
+          notitie,
         ]
       ))!;
     } else {
@@ -108,7 +162,7 @@ export async function POST(req: Request) {
           tekst(body.website),
           zoekterm,
           tekst(body.bron) || "Outreach",
-          tekst(body.notitie),
+          notitie,
         ]
       ))!;
     }
@@ -126,8 +180,8 @@ export async function POST(req: Request) {
       if (plaats) data.plaats = plaats;
       if (niche) data.niche = niche;
       if (zoekterm) data.zoekterm = zoekterm;
-      if (tekst(body.positie)) data.positie = tekst(body.positie);
-      if (tekst(body.volume)) data.volume = tekst(body.volume);
+      if (positie) data.positie = positie;
+      if (volume) data.volume = volume;
       if (tekst(body.contactpersoon)) data.aanhef = tekst(body.contactpersoon);
       await slaRapportOp(rapport.id, data);
     }
