@@ -11,7 +11,11 @@ import type {
   Impact,
   Blok as Blokje,
 } from "@/lib/report/types";
-import { RAPPORT_STATUS_LABEL, type RapportStatus } from "@/lib/statussen";
+import {
+  RAPPORT_STATUS_LABEL,
+  type RapportStatus,
+  type Lead,
+} from "@/lib/statussen";
 import { BEWIJS, INVESTERING } from "@/lib/report/defaults";
 
 const STATUS_KLEUR: Record<RapportStatus, string> = {
@@ -28,6 +32,7 @@ export default function Editor({
   rol,
   leadEmail,
   leadNaam,
+  lead,
 }: {
   rapportId: number;
   beginData: RapportData;
@@ -35,6 +40,7 @@ export default function Editor({
   rol: string;
   leadEmail: string;
   leadNaam: string;
+  lead: Lead | null;
 }) {
   const router = useRouter();
   const [data, setData] = useState<RapportData>(beginData);
@@ -238,6 +244,61 @@ export default function Editor({
             </p>
           )}
         </div>
+
+        {/* gegevens van de lead, zoals ze binnenkwamen */}
+        {lead && (lead.email || lead.website || lead.notitie) && (
+          <section className="kaart border-l-4 border-l-navy p-5">
+            <h2 className="mb-3 font-bold text-navy">Zoals de lead binnenkwam</h2>
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+              {lead.email && (
+                <div>
+                  <dt className="text-xs uppercase tracking-wide text-slate-400">
+                    E-mail
+                  </dt>
+                  <dd>{lead.email}</dd>
+                </div>
+              )}
+              {lead.website && (
+                <div>
+                  <dt className="text-xs uppercase tracking-wide text-slate-400">
+                    Website
+                  </dt>
+                  <dd className="truncate">
+                    <a
+                      href={lead.website}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-navy underline-offset-2 hover:underline"
+                    >
+                      {lead.website}
+                    </a>
+                  </dd>
+                </div>
+              )}
+              {lead.telefoon && (
+                <div>
+                  <dt className="text-xs uppercase tracking-wide text-slate-400">
+                    Telefoon
+                  </dt>
+                  <dd>{lead.telefoon}</dd>
+                </div>
+              )}
+              {lead.bron && (
+                <div>
+                  <dt className="text-xs uppercase tracking-wide text-slate-400">
+                    Bron
+                  </dt>
+                  <dd>{lead.bron}</dd>
+                </div>
+              )}
+            </dl>
+            {lead.notitie && (
+              <div className="mt-4 whitespace-pre-wrap rounded-md bg-slate-50 p-3 text-sm leading-relaxed text-slate-700">
+                {lead.notitie}
+              </div>
+            )}
+          </section>
+        )}
 
         <fieldset disabled={vergrendeld} className="space-y-5">
           {/* bedrijf */}

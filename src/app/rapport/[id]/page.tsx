@@ -32,6 +32,7 @@ export default async function RapportPagina({
         rol={gebruiker.rol}
         leadEmail={lead?.email ?? ""}
         leadNaam={lead?.bedrijfsnaam ?? ""}
+        lead={lead}
       />
     </>
   );

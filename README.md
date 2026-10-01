@@ -109,6 +109,47 @@ In de editor kun je die vaste teksten per rapport nog aanpassen onder
 
 ---
 
+## Leads die automatisch binnenkomen
+
+De app heeft een adres waar leads vanzelf in terechtkomen:
+
+```
+POST https://<jouw-adres>/api/inkomend
+koptekst: x-rk-sleutel: <INKOMEND_SLEUTEL>
+```
+
+Het verwacht json met deze velden, allemaal optioneel behalve bedrijfsnaam of e-mail:
+
+| veld | voorbeeld |
+| --- | --- |
+| `bedrijfsnaam` | Schilder bedrijf Noordenster |
+| `email` | info@noordenster.nl |
+| `website` | https://noordenster.nl/ |
+| `zoekterm` | schilder Hoogezand |
+| `positie` | 7 |
+| `volume` | 10 – 40 |
+| `contactpersoon` | de heer J. Jansen |
+| `telefoon` | 06 12345678 |
+| `bron` | Instantly |
+| `notitie` | de reactie van de lead en het AI-advies |
+
+Staat de plaats of de niche er niet bij, dan worden die uit de zoekterm gehaald:
+"schilder Hoogezand" wordt niche "schilder" en plaats "Hoogezand".
+
+Komt hetzelfde e-mailadres nog een keer binnen, dan wordt de bestaande lead
+bijgewerkt in plaats van dat er een tweede bij komt.
+
+Het antwoord bevat de link naar het rapport, zodat je die in je Telegram-bericht
+kunt zetten:
+
+```json
+{ "ok": true, "nieuw": true, "leadId": 12, "rapportId": 12,
+  "url": "https://.../rapport/12" }
+```
+
+Kan het systeem dat de lead stuurt geen eigen koptekst meegeven, dan mag de
+sleutel ook in de url: `/api/inkomend?sleutel=...`
+
 ## Wat er nog niet in zit
 
 Dit is versie 1. Hierna kunnen erbij:
