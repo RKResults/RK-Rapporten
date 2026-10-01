@@ -29,6 +29,25 @@ export interface Klantkaart {
   tekst: string;
 }
 
+/** Het blok met het resultaat bij Atlas Coaching. */
+export interface BewijsBlok {
+  titel: string;
+  tekst: string;
+  labelVoor: string;
+  labelNa: string;
+}
+
+/** Het blok met de prijzen en de garantie. */
+export interface InvesteringBlok {
+  titel: string;
+  eenmaligRegel: string;
+  punten: string[];
+  maandRegel: string;
+  maandTekst: string;
+  garantie: string;
+  voorwaarde: string;
+}
+
 export interface RapportData {
   /** compactheid, 1 = normaal. Lager drukt het rapport op minder pagina's. */
   zoom: number;
@@ -38,6 +57,8 @@ export interface RapportData {
   plaats: string;
   aanhef: string;
   datum: string;
+  /** enkelvoud, bijvoorbeeld "hovenier". Vult [niche] in de teksten. */
+  niche: string;
 
   /* positie */
   zoekterm: string;
@@ -66,6 +87,8 @@ export interface RapportData {
   verbeterpunten: Verbeterpunt[];
 
   /* slot */
+  bewijs: BewijsBlok | null;
+  investering: InvesteringBlok | null;
   slotTitel: string;
   slotBasis: string;
   slotMidden: string;

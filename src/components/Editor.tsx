@@ -12,6 +12,7 @@ import type {
   Blok as Blokje,
 } from "@/lib/report/types";
 import { RAPPORT_STATUS_LABEL, type RapportStatus } from "@/lib/statussen";
+import { BEWIJS, INVESTERING } from "@/lib/report/defaults";
 
 const STATUS_KLEUR: Record<RapportStatus, string> = {
   concept: "bg-slate-200 text-slate-700",
@@ -263,6 +264,14 @@ export default function Editor({
                 label="Datum"
                 waarde={data.datum}
                 zet={(v) => zet({ datum: v })}
+              />
+              <Tekst
+                label="Niche"
+                waarde={data.niche}
+                zet={(v) => zet({ niche: v })}
+                placeholder="hovenier"
+                hint="Enkelvoud. Vult overal waar [niche] staat."
+                breed
               />
             </div>
           </Blok>
@@ -607,6 +616,154 @@ export default function Editor({
                 </div>
               ))}
             </div>
+          </Blok>
+
+          {/* bewijs */}
+          <Blok
+            titel="Resultaat bij Atlas Coaching"
+            beschrijving="De twee kaarten en de balk met de gemiddelde positie"
+            rechts={
+              <label className="flex items-center gap-2 text-sm font-semibold text-navy">
+                <input
+                  type="checkbox"
+                  className="accent-gold"
+                  checked={!!data.bewijs}
+                  onChange={(e) =>
+                    zet({ bewijs: e.target.checked ? { ...BEWIJS } : null })
+                  }
+                />
+                In het rapport
+              </label>
+            }
+          >
+            {data.bewijs ? (
+              <div className="space-y-4">
+                <Tekst
+                  label="Kop"
+                  waarde={data.bewijs.titel}
+                  zet={(v) => zet({ bewijs: { ...data.bewijs!, titel: v } })}
+                />
+                <Gebied
+                  label="Tekst"
+                  waarde={data.bewijs.tekst}
+                  zet={(v) => zet({ bewijs: { ...data.bewijs!, tekst: v } })}
+                  rijen={3}
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <Tekst
+                    label="Label linkerkaart"
+                    waarde={data.bewijs.labelVoor}
+                    zet={(v) =>
+                      zet({ bewijs: { ...data.bewijs!, labelVoor: v } })
+                    }
+                  />
+                  <Tekst
+                    label="Label rechterkaart"
+                    waarde={data.bewijs.labelNa}
+                    zet={(v) => zet({ bewijs: { ...data.bewijs!, labelNa: v } })}
+                  />
+                </div>
+                <p className="text-xs text-slate-400">
+                  De afbeeldingen zijn vast en horen bij Atlas Coaching.
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm text-slate-400">
+                Dit blok staat nu niet in het rapport.
+              </p>
+            )}
+          </Blok>
+
+          {/* investering */}
+          <Blok
+            titel="Investering en garantie"
+            beschrijving="De prijzen en de garantie"
+            rechts={
+              <label className="flex items-center gap-2 text-sm font-semibold text-navy">
+                <input
+                  type="checkbox"
+                  className="accent-gold"
+                  checked={!!data.investering}
+                  onChange={(e) =>
+                    zet({
+                      investering: e.target.checked
+                        ? { ...INVESTERING, punten: [...INVESTERING.punten] }
+                        : null,
+                    })
+                  }
+                />
+                In het rapport
+              </label>
+            }
+          >
+            {data.investering ? (
+              <div className="space-y-4">
+                <Tekst
+                  label="Kop"
+                  waarde={data.investering.titel}
+                  zet={(v) =>
+                    zet({ investering: { ...data.investering!, titel: v } })
+                  }
+                />
+                <Tekst
+                  label="Eenmalige prijs"
+                  waarde={data.investering.eenmaligRegel}
+                  zet={(v) =>
+                    zet({
+                      investering: { ...data.investering!, eenmaligRegel: v },
+                    })
+                  }
+                />
+                <Gebied
+                  label="Wat erbij zit"
+                  waarde={data.investering.punten.join("\n")}
+                  zet={(v) =>
+                    zet({
+                      investering: {
+                        ...data.investering!,
+                        punten: v.split("\n").map((r) => r.trim()).filter(Boolean),
+                      },
+                    })
+                  }
+                  rijen={4}
+                  hint="Eén punt per regel"
+                />
+                <Tekst
+                  label="Maandprijs"
+                  waarde={data.investering.maandRegel}
+                  zet={(v) =>
+                    zet({ investering: { ...data.investering!, maandRegel: v } })
+                  }
+                />
+                <Gebied
+                  label="Tekst onder de maandprijs"
+                  waarde={data.investering.maandTekst}
+                  zet={(v) =>
+                    zet({ investering: { ...data.investering!, maandTekst: v } })
+                  }
+                  rijen={2}
+                />
+                <Gebied
+                  label="Garantie"
+                  waarde={data.investering.garantie}
+                  zet={(v) =>
+                    zet({ investering: { ...data.investering!, garantie: v } })
+                  }
+                  rijen={3}
+                />
+                <Tekst
+                  label="Voorwaarde"
+                  waarde={data.investering.voorwaarde}
+                  zet={(v) =>
+                    zet({ investering: { ...data.investering!, voorwaarde: v } })
+                  }
+                />
+              </div>
+            ) : (
+              <p className="text-sm text-slate-400">
+                Dit blok staat nu niet in het rapport.
+              </p>
+            )}
           </Blok>
 
           {/* slot */}

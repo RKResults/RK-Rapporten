@@ -14,6 +14,37 @@ const IMPACT_KLEUR: Record<Impact, string> = {
   laag: "#4B7A3F",
 };
 
+/** Vervangt [niche], [bedrijfsnaam] en de andere plaatshouders door echte waarden. */
+export function vulPlaatshouders<T>(waarde: T, d: RapportData): T {
+  const kaart: Record<string, string> = {
+    niche: d.niche || "[niche]",
+    bedrijfsnaam: d.bedrijfsnaam || "[bedrijfsnaam]",
+    zoekopdracht: d.zoekterm || "[zoekopdracht]",
+    zoekterm: d.zoekterm || "[zoekterm]",
+    plaats: d.plaats || "[plaats]",
+    positie: d.positie || "[positie]",
+    volume: d.volume || "[volume]",
+    datum: d.datum || "[datum]",
+  };
+  const vervang = (t: string) =>
+    t.replace(/\[([a-zA-Z]+)\]/g, (heel, naam) => {
+      const sleutel = String(naam).toLowerCase();
+      return sleutel in kaart ? kaart[sleutel] : heel;
+    });
+
+  const loop = (v: unknown): unknown => {
+    if (typeof v === "string") return vervang(v);
+    if (Array.isArray(v)) return v.map(loop);
+    if (v && typeof v === "object") {
+      const uit: Record<string, unknown> = {};
+      for (const [k, w] of Object.entries(v)) uit[k] = loop(w);
+      return uit;
+    }
+    return v;
+  };
+  return loop(waarde) as T;
+}
+
 /** HTML-escape, daarna **vet** omzetten naar <strong>. */
 export function inline(raw: string): string {
   const esc = (raw ?? "")
@@ -50,11 +81,16 @@ function blokHtml(b: Blok): string {
 export interface RenderOpties {
   /** absolute of relatieve url naar het logo */
   logoUrl?: string;
+  /** afbeeldingen van het resultaat bij Atlas Coaching */
+  bewijsVoor?: string;
+  bewijsNa?: string;
+  bewijsBalk?: string;
   /** true als het voor de schermpreview is in plaats van de pdf */
   preview?: boolean;
 }
 
-export function renderRapport(d: RapportData, opt: RenderOpties = {}): string {
+export function renderRapport(ruw: RapportData, opt: RenderOpties = {}): string {
+  const d = vulPlaatshouders(ruw, ruw);
   const logo = opt.logoUrl ?? "/logo-wit.png";
 
   const statBlokken = [
@@ -322,6 +358,67 @@ export function renderRapport(d: RapportData, opt: RenderOpties = {}): string {
   }
   .todo strong { color: ${NAVY}; }
 
+  /* ---------- bewijs ---------- */
+  h3.sub {
+    margin: 10pt 0 3pt;
+    font-size: 12.5pt;
+    font-weight: 700;
+    color: ${NAVY};
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  .bewijs-blok { break-inside: avoid; page-break-inside: avoid; }
+  .bewijs { margin-top: 5pt; }
+  .bewijs-rij { display: flex; gap: 6pt; max-width: 86%; margin: 0 auto; }
+  .bewijs-kolom { flex: 1; min-width: 0; }
+  .bewijs-label {
+    font-size: 8.5pt;
+    font-weight: 700;
+    letter-spacing: 0.2pt;
+    text-transform: uppercase;
+    padding: 2.5pt 0;
+    text-align: center;
+    color: #fff;
+  }
+  .bewijs-label.voor { background: #9B2C2C; }
+  .bewijs-label.na { background: #2F7A4D; }
+  .bewijs-kolom img { width: 100%; display: block; }
+  .bewijs-balk {
+    margin-top: 6pt;
+    max-width: 86%;
+    margin-left: auto;
+    margin-right: auto;
+    border: 0.75pt solid ${LINE};
+  }
+  .bewijs-balk img { width: 100%; display: block; }
+
+  /* ---------- investering ---------- */
+  .prijs {
+    background: ${NAVY};
+    color: #fff;
+    font-weight: 700;
+    font-size: 11pt;
+    padding: 6pt 11pt;
+    margin-top: 4pt;
+    break-inside: avoid;
+  }
+  .prijs .bedrag { color: ${GOLD}; }
+  .inv-punten { margin: 5pt 0 7pt; padding-left: 14pt; }
+  .garantie {
+    background: ${GOLD_LIGHT};
+    border-left: 4pt solid ${GOLD};
+    padding: 7pt 11pt 8pt 12pt;
+    margin-top: 7pt;
+    break-inside: avoid;
+  }
+  .garantie strong { color: ${NAVY}; }
+  .voorwaarde {
+    margin-top: 4pt;
+    font-size: 8.5pt;
+    font-style: italic;
+    color: ${MUTED};
+  }
+
   /* ---------- slot ---------- */
   .cta {
     background: ${NAVY};
@@ -335,11 +432,12 @@ export function renderRapport(d: RapportData, opt: RenderOpties = {}): string {
     break-inside: avoid;
   }
   .cta .label { color: ${GOLD}; }
+  .afsluiting { break-inside: avoid; page-break-inside: avoid; }
   .groet { margin-top: 12pt; }
   .naamregel { margin-top: 9pt; font-weight: 700; color: ${NAVY}; }
 
   .voet {
-    margin-top: 12pt;
+    margin-top: 10pt;
     padding-top: 5pt;
     border-top: 0.5pt solid ${LINE};
     font-size: 8pt;
@@ -420,16 +518,58 @@ ${
     : ""
 }
 ${alineas(d.slotMidden)}
+
+${
+  d.bewijs
+    ? `<section class="bewijs-blok">
+       <h3 class="sub">${inline(d.bewijs.titel)}</h3>
+       ${alineas(d.bewijs.tekst)}
+       <div class="bewijs">
+         <div class="bewijs-rij">
+           <div class="bewijs-kolom">
+             <div class="bewijs-label voor">${inline(d.bewijs.labelVoor)}</div>
+             <img src="${opt.bewijsVoor ?? "/atlas-voor.png"}" alt="Heatmap bij de start">
+           </div>
+           <div class="bewijs-kolom">
+             <div class="bewijs-label na">${inline(d.bewijs.labelNa)}</div>
+             <img src="${opt.bewijsNa ?? "/atlas-na.png"}" alt="Heatmap na drie maanden">
+           </div>
+         </div>
+         <div class="bewijs-balk">
+           <img src="${opt.bewijsBalk ?? "/atlas-balk.png"}" alt="Gemiddelde positie">
+         </div>
+       </div>
+       </section>`
+    : ""
+}
+
 ${alineas(d.slotExclusiviteit)}
+
+${
+  d.investering
+    ? `<h2>${inline(d.investering.titel)}</h2>
+       <div class="prijs">${inline(d.investering.eenmaligRegel)}</div>
+       <ul class="inv-punten">${(d.investering.punten ?? [])
+         .filter((p) => p.trim())
+         .map((p) => `<li>${inline(p)}</li>`)
+         .join("")}</ul>
+       <div class="prijs">${inline(d.investering.maandRegel)}</div>
+       <p style="margin-top:5pt">${inline(d.investering.maandTekst)}</p>
+       <div class="garantie">${inline(d.investering.garantie)}</div>
+       <p class="voorwaarde">${inline(d.investering.voorwaarde)}</p>`
+    : ""
+}
 
 <div class="cta"><span class="label">Volgende stap:</span> ${inline(
     d.volgendeStap
   )}</div>
 
+<div class="afsluiting">
 <p class="groet">Met vriendelijke groet,</p>
 <p class="naamregel">${inline(d.ondertekening)}</p>
 
 <div class="voet">RK Results&nbsp;&nbsp;|&nbsp;&nbsp;Online marketing&nbsp;&nbsp;|&nbsp;&nbsp;rkresults.com</div>
+</div>
 
 </div>
 </body>

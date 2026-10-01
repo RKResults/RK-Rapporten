@@ -9,7 +9,13 @@ import path from "node:path";
 import { renderRapport } from "../src/lib/report/render";
 import { htmlNaarPdf, sluitBrowser } from "../src/lib/pdf";
 import type { RapportData } from "../src/lib/report/types";
-import { STANDAARD_KLANTKAARTEN, TOP3_INTRO, SLOT_MIDDEN } from "../src/lib/report/defaults";
+import {
+  STANDAARD_KLANTKAARTEN,
+  TOP3_INTRO,
+  SLOT_MIDDEN,
+  BEWIJS,
+  INVESTERING,
+} from "../src/lib/report/defaults";
 
 function dataUrl(bestand: string): string {
   const buf = fs.readFileSync(bestand);
@@ -19,10 +25,11 @@ function dataUrl(bestand: string): string {
 }
 
 const data: RapportData = {
-  zoom: 1,
+  zoom: 0.95,
   bedrijfsnaam: "Meric Autorijschool",
   plaats: "Drachten",
   aanhef: "de heer O. Meric",
+  niche: "rijschool",
   datum: "1 oktober 2026",
 
   zoekterm: "rijschool Drachten",
@@ -49,7 +56,7 @@ const data: RapportData = {
   tekstOnderTabel:
     "Uw leerlingen zijn enthousiast: uw Google-reviews zijn allemaal 5 sterren. Met meer dan 200 geslaagden heeft u veel meer tevreden leerlingen dan Google nu laat zien. Die basis is er dus al. Google moet alleen nog ontdekken hoe goed u bent.",
 
-  verbeterpuntenTitel: "De drie belangrijkste verbeterpunten",
+  verbeterpuntenTitel: "Drie verbeterpunten om hogerop te komen",
   verbeterpunten: [
     {
       titel: "Uw 200+ geslaagden zijn onzichtbaar op Google",
@@ -96,18 +103,25 @@ const data: RapportData = {
     },
   ],
 
+  bewijs: BEWIJS,
+  investering: INVESTERING,
   slotTitel: "Hoe komt uw bedrijf in de top 3?",
   slotBasis: "tevreden leerlingen en een hoog slagingspercentage",
   slotMidden: SLOT_MIDDEN,
   slotExclusiviteit:
-    "Wij kunnen per locatie met maar één rijschool werken. Alleen zo kunnen we ook echt een bedrijf in de top 3 zetten. Als we gaan samenwerken, doen we dit dus niet voor uw concurrenten.",
+    "Wij kunnen per locatie met maar één [niche] werken. Alleen zo kunnen we ook echt een bedrijf in de top 3 zetten. Als we gaan samenwerken, doen we dit dus niet voor uw concurrenten.",
   volgendeStap:
-    "reageer op deze mail. Dan plannen we een kort gesprek van 15 minuten in en laten we zien hoe we Meric Autorijschool naar de top 3 brengen.",
+    "reageer op deze mail. Dan plannen we een kort gesprek van 15 minuten in en laten we zien hoe we [bedrijfsnaam] naar de top 3 brengen.",
   ondertekening: "Kishan & Dylan",
 };
 
 async function main() {
-  const html = renderRapport(data, { logoUrl: dataUrl("public/logo-wit.png") });
+  const html = renderRapport(data, {
+    logoUrl: dataUrl("public/logo-wit.png"),
+    bewijsVoor: dataUrl("public/atlas-voor.png"),
+    bewijsNa: dataUrl("public/atlas-na.png"),
+    bewijsBalk: dataUrl("public/atlas-balk.png"),
+  });
   fs.writeFileSync("/tmp/proef.html", html);
   const pdf = await htmlNaarPdf(html);
   fs.writeFileSync("/tmp/proef.pdf", pdf);

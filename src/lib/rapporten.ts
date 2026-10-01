@@ -20,25 +20,33 @@ import type {
   Rapport,
 } from "./statussen";
 
-let logoCache: string | null = null;
+const afbeeldingCache = new Map<string, string>();
 
-export function logoDataUrl(): string {
-  if (logoCache) return logoCache;
+/** Leest een bestand uit public/ en geeft het terug als data-url. */
+export function publicDataUrl(naam: string): string {
+  const bestaand = afbeeldingCache.get(naam);
+  if (bestaand !== undefined) return bestaand;
+
   const kandidaten = [
-    path.join(process.cwd(), "public", "logo-wit.png"),
-    path.join(process.cwd(), "..", "public", "logo-wit.png"),
+    path.join(process.cwd(), "public", naam),
+    path.join(process.cwd(), "..", "public", naam),
   ];
   for (const k of kandidaten) {
     try {
       const buf = fs.readFileSync(k);
-      logoCache = `data:image/png;base64,${buf.toString("base64")}`;
-      return logoCache;
+      const url = `data:image/png;base64,${buf.toString("base64")}`;
+      afbeeldingCache.set(naam, url);
+      return url;
     } catch {
       /* volgende proberen */
     }
   }
-  logoCache = "";
-  return logoCache;
+  afbeeldingCache.set(naam, "");
+  return "";
+}
+
+export function logoDataUrl(): string {
+  return publicDataUrl("logo-wit.png");
 }
 
 export async function haalLeads(): Promise<Lead[]> {
@@ -156,7 +164,12 @@ export async function dataMetAfbeeldingen(
 
 export async function rapportHtml(data: RapportData): Promise<string> {
   const compleet = await dataMetAfbeeldingen(data);
-  return renderRapport(compleet, { logoUrl: logoDataUrl() });
+  return renderRapport(compleet, {
+    logoUrl: logoDataUrl(),
+    bewijsVoor: publicDataUrl("atlas-voor.png"),
+    bewijsNa: publicDataUrl("atlas-na.png"),
+    bewijsBalk: publicDataUrl("atlas-balk.png"),
+  });
 }
 
 export function pdfBestandsnaam(data: RapportData): string {
