@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 ############ bouwen ############
 FROM node:20-bookworm-slim AS bouwer
 WORKDIR /app
@@ -28,7 +26,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     CHROMIUM_PATH=/usr/bin/chromium \
-    PORT=3000
+    PORT=3000 \
+    HOSTNAME=0.0.0.0
 
 COPY --from=bouwer /app/public ./public
 COPY --from=bouwer /app/.next/standalone ./
