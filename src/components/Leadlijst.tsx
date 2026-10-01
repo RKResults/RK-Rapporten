@@ -33,6 +33,7 @@ export default function Leadlijst({
   const [zoek, setZoek] = useState("");
   const [filter, setFilter] = useState<LeadStatus | "alle">("alle");
   const [nieuwOpen, setNieuwOpen] = useState(false);
+  const [verwijderId, setVerwijderId] = useState<number | null>(null);
   const [bezig, setBezig] = useState(false);
   const [fout, setFout] = useState("");
   const [nieuw, setNieuw] = useState({
@@ -82,6 +83,16 @@ export default function Leadlijst({
     } finally {
       setBezig(false);
     }
+  }
+
+  async function verwijderLead(id: number) {
+    const res = await fetch(`/api/leads/${id}`, { method: "DELETE" });
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}));
+      setFout(json.fout || "Verwijderen lukte niet");
+    }
+    setVerwijderId(null);
+    router.refresh();
   }
 
   async function wijzigStatus(id: number, status: string) {
@@ -146,6 +157,12 @@ export default function Leadlijst({
         ))}
       </div>
 
+      {fout && (
+        <p className="mb-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+          {fout}
+        </p>
+      )}
+
       <div className="kaart overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-navy text-left text-xs uppercase tracking-wide text-white">
@@ -194,15 +211,44 @@ export default function Leadlijst({
                   </select>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  {rapporten[l.id] ? (
-                    <a
-                      href={`/rapport/${rapporten[l.id].id}`}
-                      className="font-semibold text-navy underline-offset-2 hover:underline"
-                    >
-                      Openen
-                    </a>
+                  {verwijderId === l.id ? (
+                    <span className="inline-flex items-center gap-2 text-xs">
+                      <span className="text-slate-600">Zeker weten?</span>
+                      <button
+                        onClick={() => verwijderLead(l.id)}
+                        className="font-semibold text-red-600 hover:underline"
+                      >
+                        Ja, verwijderen
+                      </button>
+                      <button
+                        onClick={() => setVerwijderId(null)}
+                        className="text-slate-500 hover:underline"
+                      >
+                        Nee
+                      </button>
+                    </span>
                   ) : (
-                    <span className="text-slate-400">–</span>
+                    <span className="inline-flex items-center gap-3">
+                      {rapporten[l.id] ? (
+                        <a
+                          href={`/rapport/${rapporten[l.id].id}`}
+                          className="font-semibold text-navy underline-offset-2 hover:underline"
+                        >
+                          Openen
+                        </a>
+                      ) : (
+                        <span className="text-slate-400">–</span>
+                      )}
+                      {rol === "admin" && (
+                        <button
+                          onClick={() => setVerwijderId(l.id)}
+                          title="Lead en rapport verwijderen"
+                          className="text-slate-300 transition hover:text-red-600"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </span>
                   )}
                 </td>
               </tr>
