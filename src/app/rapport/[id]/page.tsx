@@ -33,6 +33,7 @@ export default async function RapportPagina({
         leadEmail={lead?.email ?? ""}
         leadNaam={lead?.bedrijfsnaam ?? ""}
         lead={lead}
+        standaardKopie={process.env.MAIL_KOPIE_NAAR ?? ""}
       />
     </>
   );

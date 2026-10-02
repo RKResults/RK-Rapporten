@@ -8,6 +8,7 @@ export default function VerstuurDialoog({
   rapportId,
   data,
   standaardNaar,
+  standaardKopie,
   leadNaam,
   sluit,
   klaar,
@@ -15,6 +16,7 @@ export default function VerstuurDialoog({
   rapportId: number;
   data: RapportData;
   standaardNaar: string;
+  standaardKopie: string;
   leadNaam: string;
   sluit: () => void;
   klaar: () => void;
@@ -28,7 +30,7 @@ export default function VerstuurDialoog({
   };
 
   const [naar, setNaar] = useState(standaardNaar);
-  const [kopieNaar, setKopieNaar] = useState("");
+  const [kopieNaar, setKopieNaar] = useState(standaardKopie || "");
   const [onderwerp, setOnderwerp] = useState(standaardOnderwerp(sjabloon));
   const [tekst, setTekst] = useState(standaardTekst(sjabloon));
   const [bezig, setBezig] = useState(false);
@@ -79,7 +81,7 @@ export default function VerstuurDialoog({
               />
             </div>
             <div>
-              <label className="label">Kopie naar (optioneel)</label>
+              <label className="label">Kopie naar</label>
               <input
                 type="email"
                 className="invoer"

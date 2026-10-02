@@ -23,7 +23,55 @@ function transport() {
     port,
     secure: port === 465,
     auth: { user, pass },
+    /* zonder deze grenzen blijft hij eindeloos hangen als de poort dicht is */
+    connectionTimeout: 15000,
+    greetingTimeout: 10000,
+    socketTimeout: 30000,
   });
+}
+
+/** Maakt van een technische smtp-fout een zin waar je iets mee kunt. */
+function leesbareFout(e: unknown): Error {
+  const code = (e as { code?: string })?.code ?? "";
+  const ruw = e instanceof Error ? e.message : String(e);
+  const host = process.env.SMTP_HOST ?? "de mailserver";
+  const port = process.env.SMTP_PORT || "465";
+
+  if (code === "ETIMEDOUT" || code === "ESOCKET" || code === "ECONNECTION") {
+    return new Error(
+      `Geen verbinding met ${host} op poort ${port}. Waarschijnlijk blokkeert ` +
+        `de server uitgaande mail op die poort. Probeer SMTP_PORT op 587 te ` +
+        `zetten. Werkt dat ook niet, dan moeten we overstappen op een ` +
+        `mailkoppeling via de api in plaats van smtp.`
+    );
+  }
+  if (code === "EAUTH") {
+    return new Error(
+      "Gmail weigert de inloggegevens. Gebruik een app-wachtwoord bij " +
+        "SMTP_PASS, niet je gewone wachtwoord."
+    );
+  }
+  if (code === "EENVELOPE") {
+    return new Error(`Een van de e-mailadressen klopt niet: ${ruw}`);
+  }
+  return new Error(`Versturen mislukt: ${ruw}`);
+}
+
+/** Kijkt alleen of we de mailserver kunnen bereiken en of het wachtwoord klopt. */
+export async function controleerMail(): Promise<{
+  ok: boolean;
+  host: string;
+  poort: string;
+  bericht: string;
+}> {
+  const host = process.env.SMTP_HOST ?? "(niet ingesteld)";
+  const poort = process.env.SMTP_PORT || "465";
+  try {
+    await transport().verify();
+    return { ok: true, host, poort, bericht: "Verbinding met de mailserver is goed." };
+  } catch (e) {
+    return { ok: false, host, poort, bericht: leesbareFout(e).message };
+  }
 }
 
 /** Zet platte tekst met lege regels om naar eenvoudige html. */
@@ -42,7 +90,7 @@ function naarHtml(tekst: string): string {
 export async function verstuurMail(input: MailInput): Promise<string> {
   const van =
     process.env.MAIL_VAN || `RK Results <${process.env.SMTP_USER ?? ""}>`;
-  const info = await transport().sendMail({
+  const bericht = {
     from: van,
     to: input.naar,
     cc: input.kopieNaar || undefined,
@@ -59,8 +107,15 @@ export async function verstuurMail(input: MailInput): Promise<string> {
           },
         ]
       : [],
-  });
-  return info.messageId;
+  };
+
+  try {
+    const info = await transport().sendMail(bericht);
+    return info.messageId;
+  } catch (e) {
+    console.error("smtp", e);
+    throw leesbareFout(e);
+  }
 }
 
 export {

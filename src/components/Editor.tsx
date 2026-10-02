@@ -33,6 +33,7 @@ export default function Editor({
   leadEmail,
   leadNaam,
   lead,
+  standaardKopie,
 }: {
   rapportId: number;
   beginData: RapportData;
@@ -41,6 +42,7 @@ export default function Editor({
   leadEmail: string;
   leadNaam: string;
   lead: Lead | null;
+  standaardKopie: string;
 }) {
   const router = useRouter();
   const [data, setData] = useState<RapportData>(beginData);
@@ -978,6 +980,7 @@ export default function Editor({
           rapportId={rapportId}
           data={data}
           standaardNaar={leadEmail}
+          standaardKopie={standaardKopie}
           leadNaam={leadNaam}
           sluit={() => setVerstuurOpen(false)}
           klaar={() => {
