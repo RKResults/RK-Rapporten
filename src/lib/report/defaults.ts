@@ -116,6 +116,8 @@ export function leegRapport(input: NieuwRapportInput = {}): RapportData {
       { naam: "1. ", reviews: "", score: "", extra: "" },
       { naam: "2. ", reviews: "", score: "", extra: "" },
       { naam: "3. ", reviews: "", score: "", extra: "" },
+      { naam: "4. ", reviews: "", score: "", extra: "" },
+      { naam: "5. ", reviews: "", score: "", extra: "" },
     ],
     eigenRij: { naam: bedrijfsnaam, reviews: "", score: "", extra: "" },
     tekstOnderTabel: "",

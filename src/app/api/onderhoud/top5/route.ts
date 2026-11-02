@@ -31,6 +31,17 @@ function herschrijf(waarde: unknown): unknown {
   return waarde;
 }
 
+/** Vult de concurrententabel aan tot vijf rijen. Bestaande rijen blijven staan. */
+function vulAanTotVijf(data: Record<string, unknown>): Record<string, unknown> {
+  const rijen = Array.isArray(data.concurrenten) ? [...data.concurrenten] : [];
+  if (rijen.length >= 5) return data;
+  const uit = [...rijen];
+  for (let i = rijen.length; i < 5; i++) {
+    uit.push({ naam: `${i + 1}. `, reviews: "", score: "", extra: "" });
+  }
+  return { ...data, concurrenten: uit };
+}
+
 export async function GET(req: Request) {
   try {
     await vereisAdmin();
@@ -46,7 +57,9 @@ export async function GET(req: Request) {
 
     for (const r of rapporten) {
       const oud = r.data as unknown as Record<string, unknown>;
-      const nieuw = herschrijf(oud) as Record<string, unknown>;
+      const nieuw = vulAanTotVijf(
+        herschrijf(oud) as Record<string, unknown>
+      );
 
       const velden = Object.keys(oud).filter(
         (k) => JSON.stringify(oud[k]) !== JSON.stringify(nieuw[k])
