@@ -23,7 +23,7 @@ export function vulPlaatshouders<T>(waarde: T, d: RapportData): T {
     zoekterm: d.zoekterm || "[zoekterm]",
     plaats: d.plaats || "[plaats]",
     positie: d.positie || "[positie]",
-    volume: d.volume || "[volume]",
+    volume: d.volume || "",
     datum: d.datum || "[datum]",
   };
   const vervang = (t: string) =>
@@ -98,11 +98,7 @@ export function renderRapport(ruw: RapportData, opt: RenderOpties = {}): string 
       groot: d.positie || "–",
       klein: `plek in Google Maps<br>bij "${d.zoekterm}"`,
     },
-    {
-      groot: d.volume || "–",
-      klein: `keer per maand gezocht<br>naar "${d.zoekterm}"`,
-    },
-    { groot: "Top 3", klein: "krijgt de meeste<br>aanvragen" },
+    { groot: "Top 5", klein: "krijgt de meeste<br>aanvragen" },
   ];
 
   const kaarten = (d.klantkaarten ?? [])
@@ -487,9 +483,9 @@ ${
 ${alineas(d.tekstOnderKaart)}
 ${extra}
 
-<h2>Wat krijgen de top 3 bedrijven?</h2>
+<h2>Wat krijgen de top 5 bedrijven?</h2>
 ${alineas(d.top3Intro)}
-<p>Dit zijn de klanten waar de top 3 de meeste aanvragen van krijgt:</p>
+<p>Dit zijn de klanten waar de top 5 de meeste aanvragen van krijgt:</p>
 <div class="kaarten">${kaarten}</div>
 
 <h2>${inline(d.tabelTitel)}</h2>

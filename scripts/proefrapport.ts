@@ -34,11 +34,11 @@ const data: RapportData = {
 
   zoekterm: "rijschool Drachten",
   positie: "31",
-  volume: "50 – 150",
+  volume: "",
   heatmapUrl: dataUrl(process.env.HEATMAP || "/tmp/heatmap-test.png"),
   heatmapBreedte: 112,
   tekstOnderKaart:
-    'Er wordt maandelijks zo\'n 50 tot 150 keer gezocht naar "rijschool Drachten". De meeste mensen kiezen een van de eerste drie rijscholen. Op plek 31 krijgt u aanzienlijk minder (kwalitatieve) aanvragen.',
+    'Wie zoekt op "rijschool Drachten" kiest bijna altijd een van de eerste vijf rijscholen. Op plek 31 krijgt u aanzienlijk minder (kwalitatieve) aanvragen.',
 
   extraBlok: null,
 
@@ -105,13 +105,13 @@ const data: RapportData = {
 
   bewijs: BEWIJS,
   investering: INVESTERING,
-  slotTitel: "Hoe komt uw bedrijf in de top 3?",
+  slotTitel: "Hoe komt uw bedrijf in de top 5?",
   slotBasis: "tevreden leerlingen en een hoog slagingspercentage",
   slotMidden: SLOT_MIDDEN,
   slotExclusiviteit:
-    "Wij kunnen per locatie met maar één [niche] werken. Alleen zo kunnen we ook echt een bedrijf in de top 3 zetten. Als we gaan samenwerken, doen we dit dus niet voor uw concurrenten.",
+    "Wij kunnen per locatie met maar één [niche] werken. Alleen zo kunnen we ook echt een bedrijf in de top 5 zetten. Als we gaan samenwerken, doen we dit dus niet voor uw concurrenten.",
   volgendeStap:
-    "reageer op deze mail. Dan plannen we een kort gesprek van 15 minuten in en laten we zien hoe we [bedrijfsnaam] naar de top 3 brengen.",
+    "reageer op deze mail. Dan plannen we een kort gesprek van 15 minuten in en laten we zien hoe we [bedrijfsnaam] naar de top 5 brengen.",
   ondertekening: "Kishan & Dylan",
 };
 

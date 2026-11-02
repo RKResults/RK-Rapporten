@@ -342,7 +342,7 @@ export default function Editor({
           {/* positie */}
           <Blok
             titel="Waar staat u nu?"
-            beschrijving="De drie cijferblokken en de heatmap"
+            beschrijving="De cijferblokken en de heatmap"
           >
             <div className="grid grid-cols-2 gap-4">
               <Tekst
@@ -351,20 +351,12 @@ export default function Editor({
                 zet={(v) => zet({ zoekterm: v })}
                 placeholder="hovenier Sneek"
               />
-              <div className="grid grid-cols-2 gap-4">
-                <Tekst
-                  label="Positie"
-                  waarde={data.positie}
-                  zet={(v) => zet({ positie: v })}
-                  placeholder="20"
-                />
-                <Tekst
-                  label="Zoekvolume"
-                  waarde={data.volume}
-                  zet={(v) => zet({ volume: v })}
-                  placeholder="20 – 60"
-                />
-              </div>
+              <Tekst
+                label="Positie"
+                waarde={data.positie}
+                zet={(v) => zet({ positie: v })}
+                placeholder="20"
+              />
             </div>
 
             <div className="mt-4 grid grid-cols-[1fr_auto] items-end gap-4">
@@ -906,7 +898,7 @@ export default function Editor({
                 >
                   <div className="space-y-4">
                     <Gebied
-                      label="Intro bij 'Wat krijgen de top 3 bedrijven?'"
+                      label="Intro bij 'Wat krijgen de top 5 bedrijven?'"
                       waarde={data.top3Intro}
                       zet={(v) => zet({ top3Intro: v })}
                       rijen={3}

@@ -26,19 +26,19 @@ export const TOP3_INTRO =
   "Kort en simpel gezegd: hoogwaardige klanten die snel beslissen en geld kunnen uitgeven. Ze hebben namelijk geen tijd of zin om tientallen bedrijven met elkaar te vergelijken.";
 
 export const SLOT_MIDDEN =
-  "Maar de top 3 vraagt meer dan alleen dit. Naast deze punten zijn er nog een aantal (technische) zaken die verbeterd moeten worden om uw bedrijf in de top 3 te krijgen en die plek te behouden. **Als u dat wilt, nemen wij het volledige traject over: u geeft alleen toegang en ontvangt wekelijks een update van ons.**";
+  "Maar de top 5 vraagt meer dan alleen dit. Naast deze punten zijn er nog een aantal (technische) zaken die verbeterd moeten worden om uw bedrijf in de top 5 te krijgen en die plek te behouden. **Als u dat wilt, nemen wij het volledige traject over: u geeft alleen toegang en ontvangt wekelijks een update van ons.**";
 
 export const BEWIJS: BewijsBlok = {
   titel: "Zo zag dat eruit bij Atlas Coaching",
   tekst:
-    "Binnen drie maanden na de start van de samenwerking stond het bedrijf al in de top 3. De kaarten hieronder laten het verschil zien, samen met de gemiddelde positie.",
+    "Binnen drie maanden na de start van de samenwerking stond het bedrijf al in de top 5. De kaarten hieronder laten het verschil zien, samen met de gemiddelde positie.",
   labelVoor: "Bij de start",
   labelNa: "Na drie maanden",
 };
 
 export const INVESTERING: InvesteringBlok = {
   titel: "Investering en garantie",
-  eenmaligRegel: "Het traject naar de top 3: eenmalig € 1.500 excl. btw",
+  eenmaligRegel: "Het traject naar de top 5: eenmalig € 1.500 excl. btw",
   punten: [
     "Optimalisatie van uw Google-profiel",
     "Optimalisatie van uw website voor lokale zoektermen",
@@ -47,9 +47,9 @@ export const INVESTERING: InvesteringBlok = {
   ],
   maandRegel: "Daarna bovenaan blijven: € 500 per maand excl. btw",
   maandTekst:
-    "Zodra u in de top 3 staat, zorgen wij dat u daar blijft en dat concurrenten u niet inhalen.",
+    "Zodra u in de top 5 staat, zorgen wij dat u daar blijft en dat concurrenten u niet inhalen.",
   garantie:
-    "Onze garantie: staat u binnen 90 dagen niet in de top 3 voor \"[zoekopdracht]\"? Dan werken wij kosteloos door totdat u daar wel staat.",
+    "Onze garantie: staat u binnen 90 dagen niet in de top 5 voor \"[zoekopdracht]\"? Dan werken wij kosteloos door totdat u daar wel staat.",
   voorwaarde: "Voorwaarde: wij krijgen toegang tot uw Google-profiel en website.",
 };
 
@@ -102,7 +102,7 @@ export function leegRapport(input: NieuwRapportInput = {}): RapportData {
     volume: "",
     heatmapUrl: null,
     heatmapBreedte: 115,
-    tekstOnderKaart: `Er wordt maandelijks zo'n [volume] keer gezocht naar "[zoekopdracht]". De meeste mensen kiezen een van de eerste drie ${meervoud}. Op plek [positie] krijgt u aanzienlijk minder (kwalitatieve) aanvragen.`,
+    tekstOnderKaart: `Wie zoekt op "[zoekopdracht]" kiest bijna altijd een van de eerste vijf ${meervoud}. Op plek [positie] krijgt u aanzienlijk minder (kwalitatieve) aanvragen.`,
 
     extraBlok: null,
 
@@ -134,13 +134,13 @@ export function leegRapport(input: NieuwRapportInput = {}): RapportData {
 
     bewijs: { ...BEWIJS },
     investering: { ...INVESTERING, punten: [...INVESTERING.punten] },
-    slotTitel: "Hoe komt uw bedrijf in de top 3?",
+    slotTitel: "Hoe komt uw bedrijf in de top 5?",
     slotBasis: "",
     slotMidden: SLOT_MIDDEN,
     slotExclusiviteit:
-      "Wij kunnen per locatie met maar één [niche] werken. Alleen zo kunnen we ook echt een bedrijf in de top 3 zetten. Als we gaan samenwerken, doen we dit dus niet voor uw concurrenten.",
+      "Wij kunnen per locatie met maar één [niche] werken. Alleen zo kunnen we ook echt een bedrijf in de top 5 zetten. Als we gaan samenwerken, doen we dit dus niet voor uw concurrenten.",
     volgendeStap:
-      "reageer op deze mail. Dan plannen we een kort gesprek van 15 minuten in en laten we zien hoe we [bedrijfsnaam] naar de top 3 brengen.",
+      "reageer op deze mail. Dan plannen we een kort gesprek van 15 minuten in en laten we zien hoe we [bedrijfsnaam] naar de top 5 brengen.",
     ondertekening: "Kishan & Dylan",
   };
 }
