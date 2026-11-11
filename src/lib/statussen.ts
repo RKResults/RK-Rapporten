@@ -44,6 +44,7 @@ export interface Lead {
   bron: string;
   status: LeadStatus;
   notitie: string;
+  opmerkingen: string;
   aangemaakt: string;
   bijgewerkt: string;
 }

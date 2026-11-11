@@ -49,7 +49,7 @@ export const INVESTERING: InvesteringBlok = {
   maandTekst:
     "Zodra u in de top 5 staat, zorgen wij dat u daar blijft en dat concurrenten u niet inhalen.",
   garantie:
-    "Onze garantie: staat u binnen 90 dagen niet in de top 5 voor \"[zoekopdracht]\"? Dan werken wij kosteloos door totdat u daar wel staat.",
+    "Onze garantie: staat u binnen 90 dagen niet in de top 5 (gemeten in Google Maps) voor \"[zoekopdracht]\"? Dan werken wij kosteloos door totdat u daar wel staat.",
   voorwaarde: "Voorwaarde: wij krijgen toegang tot uw Google-profiel en website.",
 };
 

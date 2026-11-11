@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Preview from "./Preview";
 import { Tekst, Gebied, Blok } from "./Velden";
 import VerstuurDialoog from "./VerstuurDialoog";
+import Opmerkingen from "./Opmerkingen";
 import type {
   RapportData,
   Verbeterpunt,
@@ -248,7 +249,7 @@ export default function Editor({
         </div>
 
         {/* gegevens van de lead, zoals ze binnenkwamen */}
-        {lead && (lead.email || lead.website || lead.notitie) && (
+        {lead && (
           <section className="kaart border-l-4 border-l-navy p-5">
             <h2 className="mb-3 font-bold text-navy">Zoals de lead binnenkwam</h2>
             <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
@@ -299,6 +300,7 @@ export default function Editor({
                 {lead.notitie}
               </div>
             )}
+            <Opmerkingen leadId={lead.id} begin={lead.opmerkingen ?? ""} />
           </section>
         )}
 

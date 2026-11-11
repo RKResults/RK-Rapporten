@@ -181,7 +181,17 @@ export default function Leadlijst({
                 className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
               >
                 <td className="px-4 py-3">
-                  <div className="font-semibold text-navy">{l.bedrijfsnaam}</div>
+                  <div className="flex items-center gap-1.5 font-semibold text-navy">
+                    {l.bedrijfsnaam}
+                    {l.opmerkingen?.trim() && (
+                      <span
+                        title={l.opmerkingen}
+                        className="cursor-help text-xs text-gold-dark"
+                      >
+                        &#9679;
+                      </span>
+                    )}
+                  </div>
                   {l.plaats && (
                     <div className="text-xs text-slate-500">{l.plaats}</div>
                   )}

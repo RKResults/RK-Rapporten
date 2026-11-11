@@ -20,7 +20,11 @@ function herschrijf(waarde: unknown): unknown {
     return waarde
       .replace(/top 3/g, "top 5")
       .replace(/Top 3/g, "Top 5")
-      .replace(/de eerste drie/g, "de eerste vijf");
+      .replace(/de eerste drie/g, "de eerste vijf")
+      .replace(
+        /niet in de top 5 voor/g,
+        "niet in de top 5 (gemeten in Google Maps) voor"
+      );
   }
   if (Array.isArray(waarde)) return waarde.map(herschrijf);
   if (waarde && typeof waarde === "object") {

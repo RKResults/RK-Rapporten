@@ -78,6 +78,8 @@ create table if not exists bestanden (
 
 create index if not exists leads_status_idx on leads(status);
 create index if not exists rapporten_lead_idx on rapporten(lead_id);
+
+alter table leads add column if not exists opmerkingen text not null default '';
 `;
 
 export async function zorgVoorSchema(): Promise<void> {

@@ -16,6 +16,7 @@ const VELDEN = [
   "bron",
   "status",
   "notitie",
+  "opmerkingen",
 ] as const;
 
 export async function PATCH(
