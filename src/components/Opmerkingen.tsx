@@ -10,9 +10,15 @@ import { useEffect, useRef, useState } from "react";
 export default function Opmerkingen({
   leadId,
   begin,
+  kop = true,
+  rijen = 4,
+  onBewaard,
 }: {
   leadId: number;
   begin: string;
+  kop?: boolean;
+  rijen?: number;
+  onBewaard?: (tekst: string) => void;
 }) {
   const [tekst, setTekst] = useState(begin);
   const [staat, setStaat] = useState<"rust" | "bezig" | "klaar" | "fout">(
@@ -34,17 +40,20 @@ export default function Opmerkingen({
           body: JSON.stringify({ opmerkingen: tekst }),
         });
         setStaat(res.ok ? "klaar" : "fout");
+        if (res.ok) onBewaard?.(tekst);
       } catch {
         setStaat("fout");
       }
     }, 1000);
     return () => clearTimeout(t);
+    // onBewaard bewust niet in de lijst, anders loopt hij elke render opnieuw
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tekst, leadId]);
 
   return (
-    <div className="mt-4">
+    <div className={kop ? "mt-4" : ""}>
       <div className="mb-1 flex items-center gap-2">
-        <label className="label mb-0">Opmerkingen</label>
+        {kop && <label className="label mb-0">Opmerkingen</label>}
         <span className="text-xs text-slate-400">
           {staat === "bezig"
             ? "opslaan..."
@@ -57,7 +66,7 @@ export default function Opmerkingen({
       </div>
       <textarea
         className="invoer leading-relaxed"
-        rows={4}
+        rows={rijen}
         value={tekst}
         onChange={(e) => setTekst(e.target.value)}
         placeholder="Gebeld op 12 nov, wil terugkoppeling na overleg met compagnon"

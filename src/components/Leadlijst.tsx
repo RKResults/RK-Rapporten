@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Opmerkingen from "./Opmerkingen";
 import {
   LEAD_STATUS_LABEL,
   type Lead,
@@ -34,6 +35,8 @@ export default function Leadlijst({
   const [filter, setFilter] = useState<LeadStatus | "alle">("alle");
   const [nieuwOpen, setNieuwOpen] = useState(false);
   const [verwijderId, setVerwijderId] = useState<number | null>(null);
+  const [notitieId, setNotitieId] = useState<number | null>(null);
+  const [eigenTekst, setEigenTekst] = useState<Record<number, string>>({});
   const [bezig, setBezig] = useState(false);
   const [fout, setFout] = useState("");
   const [nieuw, setNieuw] = useState({
@@ -56,6 +59,8 @@ export default function Leadlijst({
         .includes(t);
     });
   }, [leads, zoek, filter]);
+
+  const opmerkingVan = (l: Lead) => eigenTekst[l.id] ?? l.opmerkingen ?? "";
 
   const tellers = useMemo(() => {
     const t: Record<string, number> = {};
@@ -176,21 +181,30 @@ export default function Leadlijst({
           </thead>
           <tbody>
             {zichtbaar.map((l) => (
+              <Fragment key={l.id}>
               <tr
-                key={l.id}
                 className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
               >
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-1.5 font-semibold text-navy">
                     {l.bedrijfsnaam}
-                    {l.opmerkingen?.trim() && (
-                      <span
-                        title={l.opmerkingen}
-                        className="cursor-help text-xs text-gold-dark"
-                      >
-                        &#9679;
-                      </span>
-                    )}
+                    <button
+                      onClick={() =>
+                        setNotitieId(notitieId === l.id ? null : l.id)
+                      }
+                      title={
+                        opmerkingVan(l).trim()
+                          ? opmerkingVan(l)
+                          : "Opmerking toevoegen"
+                      }
+                      className={`text-xs transition ${
+                        opmerkingVan(l).trim()
+                          ? "text-gold-dark"
+                          : "text-slate-300 hover:text-slate-500"
+                      }`}
+                    >
+                      &#9998;
+                    </button>
                   </div>
                   {l.plaats && (
                     <div className="text-xs text-slate-500">{l.plaats}</div>
@@ -262,6 +276,22 @@ export default function Leadlijst({
                   )}
                 </td>
               </tr>
+              {notitieId === l.id && (
+                <tr className="border-b border-slate-100 bg-slate-50">
+                  <td colSpan={5} className="px-4 py-3">
+                    <Opmerkingen
+                      leadId={l.id}
+                      begin={opmerkingVan(l)}
+                      kop={false}
+                      rijen={3}
+                      onBewaard={(t) =>
+                        setEigenTekst((o) => ({ ...o, [l.id]: t }))
+                      }
+                    />
+                  </td>
+                </tr>
+              )}
+              </Fragment>
             ))}
             {!zichtbaar.length && (
               <tr>
